@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fita 3.2</title>
     <style>
-        body {}
-
         table,
         td {
             border: 1px solid black;
@@ -17,7 +15,7 @@
 </head>
 
 <body>
-    <h1>Filtra llegues</h1>
+    <h1>Filtra llengües</h1>
 
     <form action="ex1.php" method="post">
         <label for="language">Llenguatge: </label>
@@ -30,7 +28,6 @@
     # (1.0) Definim els paràmetres de la pàgina web
     $resultat = null;
     $language = null;
-    $minHabitants = null;
     if (isset($_POST['language'])) {
         $language = $_POST['language'];
     }
@@ -42,9 +39,9 @@
     mysqli_select_db($conn, 'mundo');
 
     # (2.1) creem el string de la consulta (query)
-    $consulta = "SELECT * FROM city ORDER BY Population desc;";
+    $consulta = "SELECT DISTINCT Language, IsOfficial FROM countrylanguage ORDER BY Language ASC;";
     if ($language != null) {
-        $consulta = "SELECT * FROM city WHERE Population BETWEEN $minHabitants AND $maxHabitants ORDER BY Population desc;";
+        $consulta = "SELECT DISTINCT Language, IsOfficial FROM countrylanguage WHERE Language LIKE '%$language%' ORDER BY Language ASC;";
     }
 
     # (2.2) enviem la query al SGBD per obtenir el resultat
@@ -65,7 +62,7 @@
         <!-- la capçalera de la taula l'hem de fer nosaltres -->
         <thead>
             <tr>
-                <th colspan="4" align="center" bgcolor="cyan">Llistat de ciutats</th>
+                <th colspan="4" align="center" bgcolor="cyan">Llistat de llengües</th>
             </tr>
         </thead>
         <tbody>
@@ -82,10 +79,11 @@
                     # (3.4) cadascuna de les columnes ha d'anar precedida d'un <td>
                     #	després concatenar el contingut del camp del registre
                     #	i tancar amb un </td>
-                    echo "\t\t\t\t<td>" . $registre["Name"] . "</td>\n";
-                    echo "\t\t\t\t<td>" . $registre['CountryCode'] . "</td>\n";
-                    echo "\t\t\t\t<td>" . $registre["District"] . "</td>\n";
-                    echo "\t\t\t\t<td>" . $registre['Population'] . "</td>\n";
+                    echo "\t\t\t\t<td>" . $registre["Language"];
+                    if ($registre["IsOfficial"] == "T") {
+                        echo " [OFICIAL]";
+                    }
+                    echo "</td>\n";
 
                     # (3.5) tanquem la fila
                     echo "\t\t\t</tr>\n";
